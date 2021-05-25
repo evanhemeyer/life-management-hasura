@@ -1,1 +1,176 @@
-[]
+- table:
+    schema: public
+    name: budget_item_transactions
+  configuration:
+    custom_root_fields:
+      insert: insertBudgetItemTransactions
+      insert_one: insertBudgetItemTransaction
+      select_by_pk: budgetItemTransaction
+      select: budgetItemTransactions
+      delete: deleteBudgetItemTransactions
+      update: updateBudgetItemTransactions
+      delete_by_pk: deleteBudgetItemTransaction
+      update_by_pk: updateBudgetItemTransaction
+    custom_column_names:
+      from_budget_item_id: fromBudgetItemId
+      to_budget_item_id: toBudgetItemId
+      updated_at: updatedAt
+      created_at: createdAt
+- table:
+    schema: public
+    name: budget_items
+  configuration:
+    custom_root_fields:
+      insert: insertBudgetItems
+      insert_one: insertBudgetItem
+      select_by_pk: budgetItem
+      select: budgetItems
+      delete: deleteBudgetItems
+      update: updateBudgetItems
+      delete_by_pk: deleteBudgetItem
+      update_by_pk: updateBudgetItem
+    custom_column_names:
+      updated_at: updatedAt
+      budget_id: budgetId
+      created_at: createdAt
+  object_relationships:
+  - name: budget
+    using:
+      foreign_key_constraint_on: budget_id
+  array_relationships:
+  - name: inflowBudgetTransactions
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: budget_item_transactions
+        column_mapping:
+          id: to_budget_item_id
+  - name: outflowBudgetTransactions
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: budget_item_transactions
+        column_mapping:
+          id: from_budget_item_id
+- table:
+    schema: public
+    name: budgets
+  configuration:
+    custom_root_fields:
+      insert: insertBudgets
+      insert_one: insertBudget
+      select_by_pk: budget
+      delete: deleteBudgets
+      update: updateBudgets
+      delete_by_pk: deleteBudget
+      update_by_pk: updateBudget
+    custom_column_names:
+      updated_at: updatedAt
+      created_at: createdAt
+      user_id: userId
+  array_relationships:
+  - name: budget_items
+    using:
+      foreign_key_constraint_on:
+        column: budget_id
+        table:
+          schema: public
+          name: budget_items
+  - name: financial_accounts
+    using:
+      foreign_key_constraint_on:
+        column: budget_id
+        table:
+          schema: public
+          name: financial_accounts
+- table:
+    schema: public
+    name: financial_account_types
+  configuration:
+    custom_root_fields:
+      insert: insertFinancialAccountTypes
+      insert_one: insertFinancialAccountType
+      select_by_pk: financialAccountType
+      select: financialAccountTypes
+      delete: deleteFinancialAccountTypes
+      update: updateFinancialAccountTypes
+      delete_by_pk: deleteFinancialAccountType
+      update_by_pk: updateFinancialAccountType
+    custom_column_names:
+      updated_at: updatedAt
+      created_at: createdAt
+- table:
+    schema: public
+    name: financial_accounts
+  configuration:
+    custom_root_fields:
+      insert: insertFinancialAccounts
+      insert_one: insertFinancialAccount
+      select_by_pk: financialAccount
+      select: financialAccounts
+      delete: deleteFinancialAccounts
+      update: updateFinancialAccounts
+      delete_by_pk: deleteFinancialAccount
+      update_by_pk: updateFinancialAccount
+    custom_column_names:
+      financial_account_type_id: financialAccountTypeId
+      updated_at: updatedAt
+      budget_id: budgetId
+      created_at: createdAt
+  object_relationships:
+  - name: budget
+    using:
+      foreign_key_constraint_on: budget_id
+  - name: financial_account_type
+    using:
+      foreign_key_constraint_on: financial_account_type_id
+  array_relationships:
+  - name: financial_transactions
+    using:
+      foreign_key_constraint_on:
+        column: financial_account_id
+        table:
+          schema: public
+          name: financial_transactions
+- table:
+    schema: public
+    name: financial_transactions
+  configuration:
+    custom_root_fields:
+      insert: insertFinancialTransactions
+      select_aggregate: financialTransactionsAggregate
+      insert_one: insertFinancialTransaction
+      select_by_pk: financialTransaction
+      select: financialTransactions
+      delete: deleteFinancialTransactions
+      update: updateFinancialTransactions
+      delete_by_pk: deleteFinancialTransaction
+      update_by_pk: updateFinancialTransaction
+    custom_column_names:
+      budget_item_id: budgetItemId
+      financial_account_id: financialAccountId
+      transaction_date: transactionDate
+      updated_at: updatedAt
+      created_at: createdAt
+      payee_name: payeeName
+  object_relationships:
+  - name: financial_account
+    using:
+      foreign_key_constraint_on: financial_account_id
+- table:
+    schema: public
+    name: users
+  configuration:
+    custom_root_fields:
+      insert: insertUsers
+      insert_one: insertUser
+      select_by_pk: user
+      delete: deleteUsers
+      update: updateUsers
+      delete_by_pk: deleteUser
+      update_by_pk: updateUser
+    custom_column_names:
+      first_name: firstName
+      last_name: lastName
