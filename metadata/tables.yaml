@@ -137,14 +137,14 @@
       created_at: createdAt
       user_id: userId
   array_relationships:
-  - name: budget_items
+  - name: budgetItems
     using:
       foreign_key_constraint_on:
         column: budget_id
         table:
           schema: public
           name: budget_items
-  - name: financial_accounts
+  - name: financialAccounts
     using:
       foreign_key_constraint_on:
         column: budget_id
@@ -229,11 +229,11 @@
   - name: budget
     using:
       foreign_key_constraint_on: budget_id
-  - name: financial_account_type
+  - name: financialAccountType
     using:
       foreign_key_constraint_on: financial_account_type_id
   array_relationships:
-  - name: financial_transactions
+  - name: financialTransactions
     using:
       foreign_key_constraint_on:
         column: financial_account_id
@@ -255,7 +255,13 @@
   select_permissions:
   - role: user
     permission:
-      columns: []
+      columns:
+      - id
+      - name
+      - financial_account_type_id
+      - budget_id
+      - updated_at
+      - created_at
       filter:
         budget:
           user_id:
@@ -294,14 +300,14 @@
       created_at: createdAt
       payee_name: payeeName
   object_relationships:
-  - name: financial_account
+  - name: financialAccount
     using:
       foreign_key_constraint_on: financial_account_id
   insert_permissions:
   - role: user
     permission:
       check:
-        financial_account:
+        financialAccount:
           budget:
             user_id:
               _eq: X-Hasura-User-Id
@@ -329,7 +335,7 @@
       - updated_at
       - created_at
       filter:
-        financial_account:
+        financialAccount:
           budget:
             user_id:
               _eq: X-Hasura-User-Id
@@ -345,7 +351,7 @@
       - payee_name
       - transaction_date
       filter:
-        financial_account:
+        financialAccount:
           budget:
             user_id:
               _eq: X-Hasura-User-Id
@@ -354,7 +360,7 @@
   - role: user
     permission:
       filter:
-        financial_account:
+        financialAccount:
           budget:
             user_id:
               _eq: X-Hasura-User-Id
