@@ -20,34 +20,6 @@
   - name: budget
     using:
       foreign_key_constraint_on: budget_id
-  insert_permissions:
-  - role: user
-    permission:
-      check:
-        budget:
-          user_id:
-            _eq: X-Hasura-User-Id
-      columns:
-      - amount
-      - budget_id
-      - from_budget_item_id
-      - to_budget_item_id
-      backend_only: false
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - id
-      - from_budget_item_id
-      - to_budget_item_id
-      - amount
-      - updated_at
-      - created_at
-      - budget_id
-      filter:
-        budget:
-          user_id:
-            _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: budget_items
@@ -70,6 +42,13 @@
     using:
       foreign_key_constraint_on: budget_id
   array_relationships:
+  - name: financial_transactions
+    using:
+      foreign_key_constraint_on:
+        column: budget_item_id
+        table:
+          schema: public
+          name: financial_transactions
   - name: inflowBudgetTransactions
     using:
       manual_configuration:
@@ -86,40 +65,6 @@
           name: budget_item_transactions
         column_mapping:
           id: from_budget_item_id
-  insert_permissions:
-  - role: user
-    permission:
-      check:
-        budget:
-          user_id:
-            _eq: X-Hasura-User-Id
-      columns:
-      - budget_id
-      - name
-      backend_only: false
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - id
-      - name
-      - budget_id
-      - updated_at
-      - created_at
-      filter:
-        budget:
-          user_id:
-            _eq: X-Hasura-User-Id
-  update_permissions:
-  - role: user
-    permission:
-      columns:
-      - name
-      filter:
-        budget:
-          user_id:
-            _eq: X-Hasura-User-Id
-      check: null
 - table:
     schema: public
     name: budgets
@@ -148,6 +93,13 @@
         table:
           schema: public
           name: budget_items
+  - name: budget_item_transactions
+    using:
+      foreign_key_constraint_on:
+        column: budget_id
+        table:
+          schema: public
+          name: budget_item_transactions
   - name: financialAccounts
     using:
       foreign_key_constraint_on:
@@ -155,37 +107,6 @@
         table:
           schema: public
           name: financial_accounts
-  insert_permissions:
-  - role: user
-    permission:
-      check:
-        user_id:
-          _eq: X-Hasura-User-Id
-      columns:
-      - name
-      backend_only: false
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - id
-      - user_id
-      - created_at
-      - updated_at
-      - name
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
-  update_permissions:
-  - role: user
-    permission:
-      columns: []
-      filter:
-        user_id:
-          _eq: X-Hasura-User-Id
-      check:
-        user_id:
-          _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: financial_account_types
@@ -202,15 +123,14 @@
     custom_column_names:
       updated_at: updatedAt
       created_at: createdAt
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - id
-      - created_at
-      - updated_at
-      - name
-      filter: {}
+  array_relationships:
+  - name: financial_accounts
+    using:
+      foreign_key_constraint_on:
+        column: financial_account_type_id
+        table:
+          schema: public
+          name: financial_accounts
 - table:
     schema: public
     name: financial_accounts
@@ -244,44 +164,6 @@
         table:
           schema: public
           name: financial_transactions
-  insert_permissions:
-  - role: user
-    permission:
-      check:
-        budget:
-          user_id:
-            _eq: X-Hasura-User-Id
-      columns:
-      - budget_id
-      - financial_account_type_id
-      - name
-      backend_only: false
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - id
-      - name
-      - financial_account_type_id
-      - budget_id
-      - updated_at
-      - created_at
-      filter:
-        budget:
-          user_id:
-            _eq: X-Hasura-User-Id
-  update_permissions:
-  - role: user
-    permission:
-      columns:
-      - budget_id
-      - financial_account_type_id
-      - name
-      filter:
-        budget:
-          user_id:
-            _eq: X-Hasura-User-Id
-      check: null
 - table:
     schema: public
     name: financial_transactions
@@ -310,67 +192,6 @@
   - name: financialAccount
     using:
       foreign_key_constraint_on: financial_account_id
-  insert_permissions:
-  - role: user
-    permission:
-      check:
-        financialAccount:
-          budget:
-            user_id:
-              _eq: X-Hasura-User-Id
-      columns:
-      - budget_item_id
-      - financial_account_id
-      - inflow
-      - memo
-      - outflow
-      - payee_name
-      - transaction_date
-      backend_only: false
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - id
-      - memo
-      - payee_name
-      - inflow
-      - outflow
-      - budget_item_id
-      - financial_account_id
-      - transaction_date
-      - updated_at
-      - created_at
-      filter:
-        financialAccount:
-          budget:
-            user_id:
-              _eq: X-Hasura-User-Id
-  update_permissions:
-  - role: user
-    permission:
-      columns:
-      - budget_item_id
-      - financial_account_id
-      - inflow
-      - memo
-      - outflow
-      - payee_name
-      - transaction_date
-      filter:
-        financialAccount:
-          budget:
-            user_id:
-              _eq: X-Hasura-User-Id
-      check: null
-  delete_permissions:
-  - role: user
-    permission:
-      filter:
-        financialAccount:
-          budget:
-            user_id:
-              _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: users
@@ -394,15 +215,3 @@
         table:
           schema: public
           name: budgets
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - id
-      - first_name
-      - last_name
-      - email
-      - google_uid
-      filter:
-        id:
-          _eq: X-Hasura-User-Id
